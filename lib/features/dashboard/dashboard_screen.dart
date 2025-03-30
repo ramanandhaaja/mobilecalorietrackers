@@ -38,8 +38,17 @@ class DashboardScreen extends StatelessWidget {
           ClipPath(
             clipper: CurvedWaveClipper(),
             child: Container(
-              height: 180.h, // Adjust height as needed
-              color: AppColors.lightGreenAccent, // Use a suitable color
+              height: 180.h,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.primaryGreen,
+                    AppColors.primaryGreen.withOpacity(0.7),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
             ),
           ),
           SafeArea(
@@ -49,7 +58,10 @@ class DashboardScreen extends StatelessWidget {
                 Expanded(
                   child: SingleChildScrollView(
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.w,
+                        vertical: 10.h,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -102,7 +114,7 @@ class DashboardScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Navigate to the Log Meal screen using go_router
-          context.push(AppRoutes.logMeal); 
+          context.push(AppRoutes.logMeal);
         },
         backgroundColor: AppColors.primaryGreen, // Use theme color
         shape: CircleBorder(), // Explicitly set the shape to be circular

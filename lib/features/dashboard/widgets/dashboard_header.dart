@@ -17,12 +17,17 @@ class DashboardHeader extends StatelessWidget {
             CrossAxisAlignment.center, // Vertically center items
         children: [
           // Logo on the left
-          SvgPicture.asset('assets/svg/logo.svg', height: 30.h),
+          Text(
+            'FitCount',
+            style: TextStyle(fontSize: 24.sp, color: Colors.white),
+          ),
 
           // Level badge and text on the right
           Row(
+            crossAxisAlignment:
+                CrossAxisAlignment.center, // Center items vertically
             children: [
-              SvgPicture.asset('assets/svg/level_badge.svg', height: 24.h),
+              SvgPicture.asset('assets/svg/level_badge.svg', height: 32.h),
               SizedBox(width: 8.w), // Increased spacing
               Text(
                 'Level 2', // Replace with dynamic user level
