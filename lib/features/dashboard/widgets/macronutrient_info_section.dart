@@ -140,12 +140,10 @@ class _MacroCircle extends StatelessWidget {
           style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 4.h),
-        // Display Macro Name
-        Text(name, style: TextStyle(fontSize: 12.sp, color: Colors.grey[600])),
-        // Display Status (left/over/met)
+        // Display Macro Name and Status (left/over/met)
         Text(
-          status,
-          style: TextStyle(fontSize: 11.sp, color: Colors.grey[500]),
+          '$name $status',
+          style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
         ),
         SizedBox(height: 8.h),
         // --- Circle Indicator ---
@@ -176,9 +174,7 @@ class _MacroCircle extends StatelessWidget {
               Center(
                 child: Text(
                   _getIconForMacro(name),
-                  style: TextStyle(
-                    fontSize: 16.w,
-                  ),
+                  style: TextStyle(fontSize: 16.w),
                 ),
               ),
             ],
