@@ -12,9 +12,33 @@ final authStateProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
 });
 
 class AuthNotifier extends StateNotifier<AuthState> {
+  bool _initialized = false;
   final IAuthRepository _repository;
 
-  AuthNotifier(this._repository) : super(AuthState.initial());
+  AuthNotifier(this._repository) : super(AuthState.initial()) {
+    _initializeAuth();
+  }
+
+  Future<void> _initializeAuth() async {
+    if (_initialized) return;
+    _initialized = true;
+
+    try {
+      final hasToken = await _repository.hasValidToken();
+      if (hasToken) {
+        state = state.copyWith(
+          isAuthenticated: true,
+          isLoading: false,
+        );
+      }
+    } catch (e) {
+      // If there's an error checking the token, we'll just treat it as not authenticated
+      state = state.copyWith(
+        isAuthenticated: false,
+        isLoading: false,
+      );
+    }
+  }
 
   Future<void> login(String email, String password) async {
     try {

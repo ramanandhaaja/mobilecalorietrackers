@@ -6,9 +6,13 @@ import 'package:mobilecalorietrackers/features/auth/models/login_response.dart';
 abstract class IAuthRepository {
   Future<LoginResponse> login(String email, String password);
   Future<void> logout();
+  Future<String?> getStoredToken();
+  Future<bool> hasValidToken();
 }
 
 class AuthRepository implements IAuthRepository {
+  static const _tokenKey = 'auth-token';
+  static const _userNameKey = 'user-name';
   final Dio _dio;
   final FlutterSecureStorage _storage;
 
@@ -60,7 +64,29 @@ class AuthRepository implements IAuthRepository {
 
   @override
   Future<void> logout() async {
-    await _storage.delete(key: 'auth-token');
-    await _storage.delete(key: 'user-name');
+    await _storage.delete(key: _tokenKey);
+    await _storage.delete(key: _userNameKey);
+  }
+
+  @override
+  Future<String?> getStoredToken() async {
+    return await _storage.read(key: _tokenKey);
+  }
+
+  @override
+  Future<bool> hasValidToken() async {
+    final token = await getStoredToken();
+    if (token == null) return false;
+
+    try {
+      // Verify token with the server
+      final response = await _dio.get(
+        '${ApiConstants.baseUrl}/api/users/me',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
   }
 }
