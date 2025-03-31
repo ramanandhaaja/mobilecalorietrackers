@@ -6,6 +6,7 @@ import 'package:mobilecalorietrackers/features/log_meal/log_meal_screen.dart';
 import 'package:mobilecalorietrackers/features/splash/splash_screen.dart';
 import 'package:mobilecalorietrackers/features/history/history_screen.dart';
 import 'package:mobilecalorietrackers/features/profile/profile_screen.dart';
+import 'package:mobilecalorietrackers/features/onboarding/screens/onboarding_screen.dart';
 
 // Use riverpod provider for the router if state changes might affect routes (e.g., auth)
 // final routerProvider = Provider<GoRouter>((ref) { ... });
@@ -17,13 +18,14 @@ class AppRoutes {
   static const String dashboard = '/dashboard';
   static const String logMeal = '/log-meal';
   static const String history = '/history';
-  static const String profile = '/profile'; 
+  static const String profile = '/profile';
+  static const String onboarding = '/onboarding';
   // Add other route names here
 }
 
 class AppRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: AppRoutes.splash, 
+    initialLocation: AppRoutes.splash,
     routes: <RouteBase>[
       GoRoute(
         path: AppRoutes.splash,
@@ -39,9 +41,9 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.dashboard,
-        pageBuilder: (context, state) => const NoTransitionPage(
-          child: DashboardScreen(),
-        ),
+        pageBuilder:
+            (context, state) =>
+                const NoTransitionPage(child: DashboardScreen()),
       ),
       GoRoute(
         path: AppRoutes.logMeal,
@@ -51,23 +53,28 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.history,
-        pageBuilder: (context, state) => const NoTransitionPage(
-          child: HistoryScreen(),
-        ),
+        pageBuilder:
+            (context, state) => const NoTransitionPage(child: HistoryScreen()),
       ),
       GoRoute(
         path: AppRoutes.profile,
-        pageBuilder: (context, state) => const NoTransitionPage(
-          child: ProfileScreen(),
-        ),
+        pageBuilder:
+            (context, state) => const NoTransitionPage(child: ProfileScreen()),
+      ),
+      GoRoute(
+        path: AppRoutes.onboarding,
+        pageBuilder:
+            (context, state) =>
+                const NoTransitionPage(child: OnboardingScreen()),
       ),
       // Add other routes (e.g., signup, settings) here
     ],
     // Optional: Add error handling
-    errorBuilder: (context, state) => Scaffold(
-      appBar: AppBar(title: const Text('Error')),
-      body: Center(child: Text('Page not found: ${state.error}')),
-    ),
+    errorBuilder:
+        (context, state) => Scaffold(
+          appBar: AppBar(title: const Text('Error')),
+          body: Center(child: Text('Page not found: ${state.error}')),
+        ),
     // Optional: Add redirection logic (e.g., check auth state)
     // redirect: (context, state) {
     //   // Check auth state from a provider

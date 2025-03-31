@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
 class LogoutButton extends StatelessWidget {
   const LogoutButton({Key? key}) : super(key: key);
@@ -11,7 +12,7 @@ class LogoutButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: () {
           // TODO: Implement logout logic
-          print('Log Out Tapped');
+          context.go('/login');
         },
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.red,

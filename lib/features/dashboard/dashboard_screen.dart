@@ -114,6 +114,7 @@ class DashboardScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Navigate to the Log Meal screen using go_router
+          //context.push(AppRoutes.logMeal);
           context.push(AppRoutes.logMeal);
         },
         backgroundColor: AppColors.primaryGreen, // Use theme color
@@ -121,6 +122,7 @@ class DashboardScreen extends StatelessWidget {
         child: Icon(Icons.add, color: Colors.white),
         tooltip: 'Log Food', // Accessibility feature
       ),
+
       // Pass the current index (0 for Dashboard)
       bottomNavigationBar: const DashboardBottomNavBar(currentIndex: 0),
     );
