@@ -55,13 +55,18 @@ class FoodItemCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      name,
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
+                    Expanded(
+                      child: Text(
+                        name,
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                    SizedBox(width: 8.w),
                     Text(
                       time,
                       style: TextStyle(
@@ -73,8 +78,10 @@ class FoodItemCard extends StatelessWidget {
                 ),
                 SizedBox(height: 4.h),
                 Text(
-                  calories,
+                  '$calories calories',
                   style: TextStyle(fontSize: 14.sp, color: Colors.grey[700]),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 SizedBox(height: 8.h),
                 // Macros
@@ -89,15 +96,18 @@ class FoodItemCard extends StatelessWidget {
                                 _getMacroIcon(entry.key),
                                 style: TextStyle(
                                   fontSize: 12.r,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               SizedBox(width: 4.w),
                               Text(
-                                entry.value,
+                                '${entry.value}g',
                                 style: TextStyle(
                                   fontSize: 12.sp,
                                   color: Colors.grey[600],
                                 ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ],
                           ),

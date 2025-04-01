@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mobilecalorietrackers/core/constants/api_constants.dart';
+import 'package:mobilecalorietrackers/core/constants/storage_keys.dart';
+import 'package:mobilecalorietrackers/core/utils/logger.dart';
 import 'package:mobilecalorietrackers/features/auth/models/login_response.dart';
 
 abstract class IAuthRepository {
@@ -11,8 +13,10 @@ abstract class IAuthRepository {
 }
 
 class AuthRepository implements IAuthRepository {
-  static const _tokenKey = 'auth-token';
-  static const _userNameKey = 'user-name';
+  // Using centralized storage keys
+  final _tokenKey = StorageKeys.authToken;
+  final _userNameKey = StorageKeys.userName;
+  final _userIdKey = StorageKeys.userId;
   final Dio _dio;
   final FlutterSecureStorage _storage;
 
@@ -46,14 +50,22 @@ class AuthRepository implements IAuthRepository {
           );
           
           if (redirectResponse.statusCode == 200) {
-            return LoginResponse.fromJson(redirectResponse.data);
+            final loginResponse = LoginResponse.fromJson(redirectResponse.data);
+            await _storage.write(key: _tokenKey, value: loginResponse.token);
+            await _storage.write(key: _userIdKey, value: loginResponse.user.id.toString());
+            Logger.info('Auth', 'Login successful - User ID: ${loginResponse.user.id}');
+            return loginResponse;
           }
         }
         throw Exception('Redirect failed');
       }
 
       if (response.statusCode == 200) {
-        return LoginResponse.fromJson(response.data);
+        final loginResponse = LoginResponse.fromJson(response.data);
+        await _storage.write(key: _tokenKey, value: loginResponse.token);
+        await _storage.write(key: _userIdKey, value: loginResponse.user.id.toString());
+        Logger.info('Auth', 'Login successful - User ID: ${loginResponse.user.id}');
+        return loginResponse;
       }
 
       throw Exception(response.data?['message'] ?? 'Login failed');
@@ -66,6 +78,8 @@ class AuthRepository implements IAuthRepository {
   Future<void> logout() async {
     await _storage.delete(key: _tokenKey);
     await _storage.delete(key: _userNameKey);
+    await _storage.delete(key: _userIdKey);
+    Logger.info('Auth', 'User logged out successfully');
   }
 
   @override

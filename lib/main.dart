@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mobilecalorietrackers/core/router/app_router.dart';
 import 'package:mobilecalorietrackers/core/theme/app_theme.dart';
+import 'package:mobilecalorietrackers/features/user/providers/user_provider.dart';
 
-void main() {
-  // Ensure Flutter bindings are initialized
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // TODO: Add any other initializations here (Firebase, etc.)
+  final prefs = await SharedPreferences.getInstance();
 
-  runApp(const ProviderScope(child: MyApp())); // Wrap with ProviderScope for Riverpod
+  runApp(
+    ProviderScope(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
