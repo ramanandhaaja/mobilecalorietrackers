@@ -25,7 +25,9 @@ class _RecentlyUploadedSectionState
   }
 
   String _formatTime(DateTime date) {
-    return DateFormat('h:mma').format(date).toLowerCase();
+    // Convert UTC to local time for display
+    final localDate = date.toLocal();
+    return DateFormat('h:mma').format(localDate).toLowerCase();
   }
 
   @override
@@ -52,7 +54,11 @@ class _RecentlyUploadedSectionState
             physics: const NeverScrollableScrollPhysics(),
             itemCount: foodState.entries.length,
             itemBuilder: (context, index) {
-              final entry = foodState.entries[index];
+              // Sort entries by date in descending order (latest first)
+              final sortedEntries =
+                  foodState.entries.toList()
+                    ..sort((a, b) => b.date.compareTo(a.date));
+              final entry = sortedEntries[index];
               return FoodItemCard(
                 name: entry.name,
                 calories: entry.calories.toString(),

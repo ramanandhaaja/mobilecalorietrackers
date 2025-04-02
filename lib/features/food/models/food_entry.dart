@@ -1,12 +1,34 @@
-class FoodEntry {
+import 'package:hive/hive.dart';
+
+part 'food_entry.g.dart';
+
+@HiveType(typeId: 0)
+class FoodEntry extends HiveObject {
+  @HiveField(0)
   final String id;
+  
+  @HiveField(1)
   final String name;
+  
+  @HiveField(2)
   final String portion;
+  
+  @HiveField(3)
   final int calories;
+  
+  @HiveField(4)
   final int protein;
+  
+  @HiveField(5)
   final int carbs;
+  
+  @HiveField(6)
   final int fat;
+  
+  @HiveField(7)
   final String mealType;
+  
+  @HiveField(8)
   final DateTime date;
 
   FoodEntry({

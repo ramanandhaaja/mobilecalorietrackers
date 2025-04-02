@@ -40,7 +40,11 @@ class FoodNotifier extends StateNotifier<FoodState> {
 
   Future<void> fetchTodayEntries() async {
     try {
-      state = state.copyWith(isLoading: true, error: null);
+      // Only show loading if we don't have any cached entries
+      if (state.entries.isEmpty) {
+        state = state.copyWith(isLoading: true, error: null);
+      }
+      
       final entries = await _repository.getTodayFoodEntries();
       state = state.copyWith(
         entries: entries,
