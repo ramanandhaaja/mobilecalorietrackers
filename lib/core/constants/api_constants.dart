@@ -1,3 +1,3 @@
 class ApiConstants {
-  static const String baseUrl = 'https://www.fitcount.id'; // Update this with your Next.js server URL
+  static const String baseUrl = 'http://127.0.0.1:3000';
 }

@@ -31,25 +31,26 @@ class FoodEntryAdapter extends TypeAdapter<FoodEntry> {
 
   @override
   void write(BinaryWriter writer, FoodEntry obj) {
-    writer.writeByte(9);
-    writer.writeByte(0);
-    writer.write(obj.id);
-    writer.writeByte(1);
-    writer.write(obj.name);
-    writer.writeByte(2);
-    writer.write(obj.portion);
-    writer.writeByte(3);
-    writer.write(obj.calories);
-    writer.writeByte(4);
-    writer.write(obj.protein);
-    writer.writeByte(5);
-    writer.write(obj.carbs);
-    writer.writeByte(6);
-    writer.write(obj.fat);
-    writer.writeByte(7);
-    writer.write(obj.mealType);
-    writer.writeByte(8);
-    writer.write(obj.date);
+    writer
+      ..writeByte(9)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.name)
+      ..writeByte(2)
+      ..write(obj.portion)
+      ..writeByte(3)
+      ..write(obj.calories)
+      ..writeByte(4)
+      ..write(obj.protein)
+      ..writeByte(5)
+      ..write(obj.carbs)
+      ..writeByte(6)
+      ..write(obj.fat)
+      ..writeByte(7)
+      ..write(obj.mealType)
+      ..writeByte(8)
+      ..write(obj.date);
   }
 
   @override
@@ -62,3 +63,31 @@ class FoodEntryAdapter extends TypeAdapter<FoodEntry> {
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+FoodEntry _$FoodEntryFromJson(Map<String, dynamic> json) => FoodEntry(
+      id: FoodEntry._idFromJson(json['id']),
+      name: json['name'] as String,
+      portion: json['portion'] as String,
+      calories: (json['calories'] as num).toInt(),
+      protein: (json['protein'] as num).toInt(),
+      carbs: (json['carbs'] as num).toInt(),
+      fat: (json['fat'] as num).toInt(),
+      mealType: json['mealType'] as String,
+      date: FoodEntry._dateFromJson(json['date'] as String),
+    );
+
+Map<String, dynamic> _$FoodEntryToJson(FoodEntry instance) => <String, dynamic>{
+      'id': FoodEntry._idToJson(instance.id),
+      'name': instance.name,
+      'portion': instance.portion,
+      'calories': instance.calories,
+      'protein': instance.protein,
+      'carbs': instance.carbs,
+      'fat': instance.fat,
+      'mealType': instance.mealType,
+      'date': FoodEntry._dateToJson(instance.date),
+    };

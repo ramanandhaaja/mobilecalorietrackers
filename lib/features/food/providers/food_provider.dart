@@ -1,6 +1,7 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../models/food_entry.dart';
 import '../models/macro_totals.dart';
+import '../repositories/i_food_repository.dart';
 import '../repositories/food_repository.dart';
 
 class FoodState {
@@ -8,7 +9,11 @@ class FoodState {
   final bool isLoading;
   final String? error;
 
-  FoodState({required this.entries, required this.isLoading, this.error});
+  const FoodState({
+    required this.entries,
+    required this.isLoading,
+    this.error,
+  });
 
   factory FoodState.initial() {
     return FoodState(entries: [], isLoading: false);
