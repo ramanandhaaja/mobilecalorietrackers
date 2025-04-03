@@ -48,7 +48,12 @@ class UserDetailsNotifier extends StateNotifier<AsyncValue<UserDetails?>> {
 
   Future<bool> loadUserDetails() async {
     try {
-      state = const AsyncValue.loading();
+      // Get current details to check if we need to show loading
+      final currentDetails = state.value;
+      if (currentDetails == null) {
+        state = const AsyncValue.loading();
+      }
+      
       final details = await _repository.getUserDetails();
       
       if (details != null) {

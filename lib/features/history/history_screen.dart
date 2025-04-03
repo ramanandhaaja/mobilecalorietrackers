@@ -43,10 +43,6 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       (index) => startOfWeek.add(Duration(days: index)),
     );
 
-    if (state.isLoading && state.entriesByDate.isEmpty) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
     // Create chart data from history state
     final chartData =
         weekDates.map((date) {
@@ -109,140 +105,147 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             onRefresh: () async {
               await ref.read(historyProvider.notifier).fetchWeeklyData();
             },
-            child: ListView(
-              children: [
-                // Horizontal Calendar
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 0.h),
-                  padding: EdgeInsets.symmetric(vertical: 0.h),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(12.r),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
-                        spreadRadius: 1,
-                        blurRadius: 5,
-                        offset: const Offset(0, 2),
+            child: state.isLoading && state.entriesByDate.isEmpty
+                ? ListView(
+                    children: [
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.4),
+                      const Center(child: CircularProgressIndicator()),
+                    ],
+                  )
+                : ListView(
+                    children: [
+                      // Horizontal Calendar
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 0.h),
+                        padding: EdgeInsets.symmetric(vertical: 0.h),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(12.r),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.1),
+                              spreadRadius: 1,
+                              blurRadius: 5,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: HorizontalCalendar(
+                          availableDates: weekDates,
+                          selectedDate: selectedDate,
+                          onDateSelected: (date) {
+                            setState(() {
+                              selectedDate = date;
+                            });
+                            ref.read(historyProvider.notifier).selectDate(date);
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(16.r),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Weekly Chart
+                            WeeklyCalorieChart(data: chartData),
+                            SizedBox(height: 24.h),
+                            // Daily Entries
+                            ...state.entriesByDate.entries.map((entry) {
+                              final date = DateTime.parse(entry.key);
+                              final isSelected = DateUtils.isSameDay(
+                                date,
+                                selectedDate,
+                              );
+                              final entries = state.getFilteredEntries(
+                                entry.key,
+                                selectedMealType,
+                              );
+
+                              if (!isSelected) return const SizedBox.shrink();
+
+                              return Column(
+                                children: [
+                                  Card(
+                                    margin: EdgeInsets.only(bottom: 16.h),
+                                    elevation: 2,
+                                    child: Padding(
+                                      padding: EdgeInsets.all(16.r),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            DateUtils.isSameDay(date, DateTime.now())
+                                                ? 'Today'
+                                                : DateFormat(
+                                                  'EEEE, MMM d',
+                                                ).format(date),
+                                            style: theme.textTheme.titleMedium
+                                                ?.copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                          ),
+                                          SizedBox(height: 8.h),
+                                          Text(
+                                            'Total: ${state.getDailyTotals(entry.key).calories} calories',
+                                            style: theme.textTheme.bodyMedium
+                                                ?.copyWith(
+                                                  color: AppColors.primaryGreen,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                          ),
+                                          const Divider(),
+                                          ListView.builder(
+                                            shrinkWrap: true,
+                                            physics:
+                                                const NeverScrollableScrollPhysics(),
+                                            itemCount: entries.length,
+                                            itemBuilder: (context, index) {
+                                              final entry = entries[index];
+                                              return ListTile(
+                                                contentPadding: EdgeInsets.zero,
+                                                title: Text(entry.name),
+                                                subtitle: Text(entry.mealType),
+                                                trailing: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.end,
+                                                  children: [
+                                                    Text(
+                                                      '${entry.calories} cal',
+                                                      style: theme
+                                                          .textTheme
+                                                          .bodyMedium
+                                                          ?.copyWith(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color:
+                                                                AppColors
+                                                                    .primaryGreen,
+                                                          ),
+                                                    ),
+                                                    Text(
+                                                      '${entry.protein}g P • ${entry.carbs}g C • ${entry.fat}g F',
+                                                      style:
+                                                          theme.textTheme.bodySmall,
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }).toList(),
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                  child: HorizontalCalendar(
-                    availableDates: weekDates,
-                    selectedDate: selectedDate,
-                    onDateSelected: (date) {
-                      setState(() {
-                        selectedDate = date;
-                      });
-                      ref.read(historyProvider.notifier).selectDate(date);
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(16.r),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Weekly Chart
-                      WeeklyCalorieChart(data: chartData),
-                      SizedBox(height: 24.h),
-                      // Daily Entries
-                      ...state.entriesByDate.entries.map((entry) {
-                        final date = DateTime.parse(entry.key);
-                        final isSelected = DateUtils.isSameDay(
-                          date,
-                          selectedDate,
-                        );
-                        final entries = state.getFilteredEntries(
-                          entry.key,
-                          selectedMealType,
-                        );
-
-                        if (!isSelected) return const SizedBox.shrink();
-
-                        return Column(
-                          children: [
-                            Card(
-                              margin: EdgeInsets.only(bottom: 16.h),
-                              elevation: 2,
-                              child: Padding(
-                                padding: EdgeInsets.all(16.r),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      DateUtils.isSameDay(date, DateTime.now())
-                                          ? 'Today'
-                                          : DateFormat(
-                                            'EEEE, MMM d',
-                                          ).format(date),
-                                      style: theme.textTheme.titleMedium
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                    ),
-                                    SizedBox(height: 8.h),
-                                    Text(
-                                      'Total: ${state.getDailyTotals(entry.key).calories} calories',
-                                      style: theme.textTheme.bodyMedium
-                                          ?.copyWith(
-                                            color: AppColors.primaryGreen,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                    ),
-                                    const Divider(),
-                                    ListView.builder(
-                                      shrinkWrap: true,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      itemCount: entries.length,
-                                      itemBuilder: (context, index) {
-                                        final entry = entries[index];
-                                        return ListTile(
-                                          contentPadding: EdgeInsets.zero,
-                                          title: Text(entry.name),
-                                          subtitle: Text(entry.mealType),
-                                          trailing: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.end,
-                                            children: [
-                                              Text(
-                                                '${entry.calories} cal',
-                                                style: theme
-                                                    .textTheme
-                                                    .bodyMedium
-                                                    ?.copyWith(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color:
-                                                          AppColors
-                                                              .primaryGreen,
-                                                    ),
-                                              ),
-                                              Text(
-                                                '${entry.protein}g P • ${entry.carbs}g C • ${entry.fat}g F',
-                                                style:
-                                                    theme.textTheme.bodySmall,
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      }).toList(),
-                    ],
-                  ),
-                ),
-              ],
-            ),
           ),
         ],
       ),

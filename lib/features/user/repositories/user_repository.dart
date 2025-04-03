@@ -33,6 +33,12 @@ class UserRepository implements IUserRepository {
   @override
   Future<UserDetails?> getUserDetails() async {
     try {
+      // First try to get from local storage immediately
+      final localDetails = await getLocalUserDetails();
+      if (localDetails != null) {
+        return localDetails;
+      }
+
       final token = await _secureStorage.read(key: _tokenKey);
       final userId = await _secureStorage.read(key: _userIdKey);
       if (token == null || userId == null) {

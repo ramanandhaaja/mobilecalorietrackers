@@ -66,7 +66,10 @@ class HistoryNotifier extends StateNotifier<HistoryState> {
 
   Future<void> fetchWeeklyData({DateTime? date}) async {
     try {
-      state = state.copyWith(isLoading: true, error: null);
+      // Only show loading if we don't have any data
+      if (state.entriesByDate.isEmpty) {
+        state = state.copyWith(isLoading: true, error: null);
+      }
       
       // Update selected date if provided
       if (date != null) {
