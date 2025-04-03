@@ -1,32 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobilecalorietrackers/core/constants/macro_constants.dart';
+import 'package:mobilecalorietrackers/features/food/providers/food_provider.dart';
 import 'dart:math'; // Import math for max function
 
-class MacronutrientInfoSection extends StatelessWidget {
-  final int proteinConsumed;
+class MacronutrientInfoSection extends ConsumerWidget {
   final int proteinGoal;
-  final int carbsConsumed;
   final int carbsGoal;
-  final int fatConsumed;
   final int fatGoal;
 
   const MacronutrientInfoSection({
     Key? key,
-    required this.proteinConsumed,
     required this.proteinGoal,
-    required this.carbsConsumed,
     required this.carbsGoal,
-    required this.fatConsumed,
     required this.fatGoal,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final foodState = ref.watch(foodStateProvider);
+    final macroTotals = ref.read(foodStateProvider.notifier).getTodayMacroTotals();
+
+    if (foodState.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (foodState.error != null) {
+      return Center(child: Text('Error: ${foodState.error}'));
+    }
+
     // Calculate remaining/over and status for each macro
-    final proteinData = _calculateMacroData(proteinConsumed, proteinGoal);
-    final carbsData = _calculateMacroData(carbsConsumed, carbsGoal);
-    final fatData = _calculateMacroData(fatConsumed, fatGoal);
+    final proteinData = _calculateMacroData(macroTotals.protein, proteinGoal);
+    final carbsData = _calculateMacroData(macroTotals.carbs, carbsGoal);
+    final fatData = _calculateMacroData(macroTotals.fat, fatGoal);
 
     // Add Card styling similar to CalorieProgressCircle
     return Container(
@@ -78,34 +85,28 @@ class MacronutrientInfoSection extends StatelessWidget {
   Map<String, dynamic> _calculateMacroData(int consumed, int goal) {
     if (goal <= 0) {
       return {
-        'valueText': '0g',
-        'percentageValue': 0.0, // Default value for progress
+        'valueText': '0/0g',
+        'percentageValue': 0.0,
         'status': 'N/A',
       };
     }
 
-    int difference = goal - consumed;
     // Calculate progress (0.0 to 1.0) - represents amount CONSUMED
     double progressValue = max(0.0, min(1.0, consumed / goal));
-
-    String valueText;
     String status;
 
-    if (difference >= 0) {
-      // If we have macros left or exactly met the goal
-      valueText = '${difference}g';
-      status = difference == 0 ? 'met' : 'left';
+    if (consumed < goal) {
+      status = 'left';
+    } else if (consumed == goal) {
+      status = 'met';
     } else {
-      // If we're over the goal
-      valueText = '${difference.abs()}g';
       status = 'over';
       progressValue = 1.0; // Show full circle if over
     }
 
     return {
-      'valueText': valueText,
-      'percentageValue':
-          progressValue, // Use consumption progress for circle fill
+      'valueText': '$consumed/${goal}g',
+      'percentageValue': progressValue,
       'status': status,
     };
   }

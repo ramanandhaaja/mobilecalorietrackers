@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'widgets/calorie_progress_circle.dart';
 import 'widgets/curved_wave_clipper.dart';
 import 'widgets/dashboard_header.dart';
@@ -9,28 +10,29 @@ import 'widgets/streak_counter.dart';
 import 'widgets/daily_challenge_card.dart';
 import 'widgets/macronutrient_info_section.dart';
 import '../../core/theme/app_colors.dart';
-import 'package:go_router/go_router.dart'; // Add this import
-import 'package:mobilecalorietrackers/core/router/app_router.dart'; // Add this import
+import 'package:go_router/go_router.dart';
+import 'package:mobilecalorietrackers/core/router/app_router.dart';
+import 'package:mobilecalorietrackers/features/food/providers/food_provider.dart';
+import 'package:mobilecalorietrackers/features/user/providers/user_provider.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({Key? key}) : super(key: key);
 
-  // Example data - replace with actual data fetching/state management
-  final int caloriesConsumed = 1250;
-  final int caloriesGoal = 2000;
-  final int proteinConsumed = 80;
-  final int proteinGoal = 120;
-  final int carbsConsumed = 150;
-  final int carbsGoal = 250;
-  final int fatConsumed = 48;
-  final int fatGoal = 70;
+
 
   @override
-  Widget build(BuildContext context) {
-    final int caloriesLeft = caloriesGoal - caloriesConsumed;
-    final double progressPercent = caloriesLeft / caloriesGoal;
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Watch food state and user details for updates
+    ref.watch(foodStateProvider);
+    final userDetails = ref.watch(userDetailsProvider);
 
-    return Scaffold(
+    return userDetails.when(
+      data: (details) {
+        if (details == null) {
+          return const Center(child: Text('User details not found'));
+        }
+
+        return Scaffold(
       backgroundColor: AppColors.background, // Use defined background color
       body: Stack(
         children: [
@@ -67,20 +69,15 @@ class DashboardScreen extends StatelessWidget {
                         children: [
                           // Calorie Progress Circle
                           CalorieProgressCircle(
-                            caloriesLeft: caloriesLeft,
-                            goal: caloriesGoal,
-                            progressPercent: progressPercent,
+                            goal: details.dailyCalorieTarget.toInt(),
                           ),
                           SizedBox(height: 25.h),
 
                           // Macronutrient Info
                           MacronutrientInfoSection(
-                            proteinConsumed: proteinConsumed,
-                            proteinGoal: proteinGoal,
-                            carbsConsumed: carbsConsumed,
-                            carbsGoal: carbsGoal,
-                            fatConsumed: fatConsumed,
-                            fatGoal: fatGoal,
+                            proteinGoal: details.dailyProtein.toInt(),
+                            carbsGoal: details.dailyCarbs.toInt(),
+                            fatGoal: details.dailyFat.toInt(),
                           ),
                           SizedBox(height: 25.h),
 
@@ -125,6 +122,14 @@ class DashboardScreen extends StatelessWidget {
 
       // Pass the current index (0 for Dashboard)
       bottomNavigationBar: const DashboardBottomNavBar(currentIndex: 0),
+    );
+      },
+      loading: () => const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ),
+      error: (error, stack) => Scaffold(
+        body: Center(child: Text('Error: $error')),
+      ),
     );
   }
 }

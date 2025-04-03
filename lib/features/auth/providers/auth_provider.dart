@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobilecalorietrackers/features/auth/repositories/auth_repository.dart';
 import 'package:mobilecalorietrackers/features/auth/models/login_response.dart';
 
@@ -26,17 +26,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       final hasToken = await _repository.hasValidToken();
       if (hasToken) {
-        state = state.copyWith(
-          isAuthenticated: true,
-          isLoading: false,
-        );
+        state = state.copyWith(isAuthenticated: true, isLoading: false);
       }
     } catch (e) {
       // If there's an error checking the token, we'll just treat it as not authenticated
-      state = state.copyWith(
-        isAuthenticated: false,
-        isLoading: false,
-      );
+      state = state.copyWith(isAuthenticated: false, isLoading: false);
     }
   }
 
@@ -58,7 +52,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
       rethrow;
     }
-
   }
 
   Future<void> logout() async {

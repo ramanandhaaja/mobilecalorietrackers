@@ -1,28 +1,40 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobilecalorietrackers/core/theme/app_colors.dart';
+import 'package:mobilecalorietrackers/features/food/providers/food_provider.dart';
 
-class CalorieProgressCircle extends StatelessWidget {
-  final int caloriesLeft;
+class CalorieProgressCircle extends ConsumerWidget {
   final int goal;
-  final double progressPercent;
 
-  const CalorieProgressCircle({
-    super.key,
-    required this.caloriesLeft,
-    required this.goal,
-    required this.progressPercent,
-  });
+  const CalorieProgressCircle({super.key, required this.goal});
 
   @override
-  Widget build(BuildContext context) {
-    // Progress color based on how much is left
-    final Color progressColor = progressPercent > 0.75
-        ? AppColors.primaryGreen
-        : progressPercent > 0.25
+  Widget build(BuildContext context, WidgetRef ref) {
+    final foodState = ref.watch(foodStateProvider);
+
+    // Show loading state
+    if (foodState.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    // Show error state
+    if (foodState.error != null) {
+      return Center(child: Text('Error: ${foodState.error}'));
+    }
+
+    final consumed =
+        ref.read(foodStateProvider.notifier).getTodayTotalCalories();
+    final progressPercent = consumed / goal;
+
+    // Progress color based on consumption percentage
+    final Color progressColor =
+        progressPercent > 0.75
+            ? Colors.red
+            : progressPercent > 0.5
             ? Colors.orange
-            : Colors.red;
+            : AppColors.primaryGreen;
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
@@ -60,7 +72,7 @@ class CalorieProgressCircle extends StatelessWidget {
                 textBaseline: TextBaseline.alphabetic,
                 children: [
                   Text(
-                    caloriesLeft.toString(),
+                    '$consumed/$goal',
                     style: TextStyle(
                       fontSize: 32.sp,
                       fontWeight: FontWeight.bold,

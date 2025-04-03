@@ -1,5 +1,6 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../models/food_entry.dart';
+import '../models/macro_totals.dart';
 import '../repositories/food_repository.dart';
 
 class FoodState {
@@ -7,17 +8,10 @@ class FoodState {
   final bool isLoading;
   final String? error;
 
-  FoodState({
-    required this.entries,
-    required this.isLoading,
-    this.error,
-  });
+  FoodState({required this.entries, required this.isLoading, this.error});
 
   factory FoodState.initial() {
-    return FoodState(
-      entries: [],
-      isLoading: false,
-    );
+    return FoodState(entries: [], isLoading: false);
   }
 
   FoodState copyWith({
@@ -44,18 +38,30 @@ class FoodNotifier extends StateNotifier<FoodState> {
       if (state.entries.isEmpty) {
         state = state.copyWith(isLoading: true, error: null);
       }
-      
+
       final entries = await _repository.getTodayFoodEntries();
-      state = state.copyWith(
-        entries: entries,
-        isLoading: false,
-      );
+      state = state.copyWith(entries: entries, isLoading: false);
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        error: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, error: e.toString());
     }
+  }
+
+  MacroTotals getTodayMacroTotals() {
+    return state.entries.fold(
+      MacroTotals.zero(),
+      (totals, entry) => totals.add(
+        protein: entry.protein,
+        carbs: entry.carbs,
+        fat: entry.fat,
+      ),
+    );
+  }
+
+  int getTodayTotalCalories() {
+    return state.entries.fold(
+      0,
+      (total, entry) => total + entry.calories,
+    );
   }
 }
 

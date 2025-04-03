@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart'; // Add this import
 // TODO: Import necessary packages (e.g., image_picker, dio)
 
@@ -29,7 +29,9 @@ class _LogMealScreenState extends ConsumerState<LogMealScreen> {
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
     // Assuming light green is primary or secondary container color? Let's use primaryContainer for now.
-    final Color headerColor = colorScheme.primaryContainer.withOpacity(0.3); // Light green header
+    final Color headerColor = colorScheme.primaryContainer.withOpacity(
+      0.3,
+    ); // Light green header
     final Color primaryButtonColor = colorScheme.primary; // Green buttons
 
     return Scaffold(
@@ -41,13 +43,14 @@ class _LogMealScreenState extends ConsumerState<LogMealScreen> {
           onPressed: () {
             // Use go_router to pop
             if (context.canPop()) {
-               context.pop();
+              context.pop();
             }
           },
         ),
         elevation: 0, // Keep it clean
       ),
-      body: SingleChildScrollView( // To handle overflow on smaller screens
+      body: SingleChildScrollView(
+        // To handle overflow on smaller screens
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -72,7 +75,10 @@ class _LogMealScreenState extends ConsumerState<LogMealScreen> {
           style: ElevatedButton.styleFrom(
             backgroundColor: primaryButtonColor,
             foregroundColor: colorScheme.onPrimary,
-            minimumSize: const Size(double.infinity, 50), // Full width, standard height
+            minimumSize: const Size(
+              double.infinity,
+              50,
+            ), // Full width, standard height
           ),
           // TODO: Disable button based on state (e.g., if no meal is added)
           onPressed: () {
@@ -80,7 +86,7 @@ class _LogMealScreenState extends ConsumerState<LogMealScreen> {
             print('Save Meal Pressed!');
             // Navigate back to dashboard using go_router
             if (context.canPop()) {
-               context.pop(); 
+              context.pop();
             }
           },
           child: const Text('Save Meal'),
@@ -130,21 +136,21 @@ class _LogMealScreenState extends ConsumerState<LogMealScreen> {
 
   // Helper method for Manual Entry UI
   Widget _buildManualEntrySection(Color buttonColor) {
-     // TODO: Add state (_isManualEntryVisible) and toggle logic
+    // TODO: Add state (_isManualEntryVisible) and toggle logic
     return Column(
       children: [
         OutlinedButton.icon(
           icon: const Icon(Icons.edit),
           label: const Text('Enter Manually'),
           style: OutlinedButton.styleFrom(
-             minimumSize: const Size(double.infinity, 50),
+            minimumSize: const Size(double.infinity, 50),
           ),
           onPressed: () {
             // TODO: Toggle visibility of search bar etc.
-             setState(() {
-               // _isManualEntryVisible = !_isManualEntryVisible;
-               print('Toggle Manual Entry'); // Placeholder
-             });
+            setState(() {
+              // _isManualEntryVisible = !_isManualEntryVisible;
+              print('Toggle Manual Entry'); // Placeholder
+            });
           },
         ),
         // TODO: Add conditional UI based on _isManualEntryVisible
@@ -157,7 +163,7 @@ class _LogMealScreenState extends ConsumerState<LogMealScreen> {
     );
   }
 
-   // Helper method for Meal Type Selector
+  // Helper method for Meal Type Selector
   Widget _buildMealTypeSelector() {
     // TODO: Implement using DropdownButton or ToggleButtons based on design preference
     // Example using ToggleButtons:
@@ -168,8 +174,6 @@ class _LogMealScreenState extends ConsumerState<LogMealScreen> {
     // );
     return Text('Meal Type Selector Placeholder'); // Placeholder
   }
-
-
 }
 
 // Placeholder for meal type enum

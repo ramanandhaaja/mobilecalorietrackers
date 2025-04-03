@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobilecalorietrackers/core/theme/app_colors.dart';
 import 'package:mobilecalorietrackers/features/auth/providers/auth_provider.dart';
-import 'package:mobilecalorietrackers/features/user/providers/user_provider.dart'; // Assuming AppColors exists
+import 'package:mobilecalorietrackers/features/user/providers/user_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
